@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env*
+
+# AI Tooling & Local Config Exclusions
+.mcp.json
+.antigravity/
+.gemini/
+.claude/

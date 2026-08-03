@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elite Grill — Flame Grilled. Fully Loaded. | Lahore</title>
+<meta name="description" content="Elite Grill Lahore — charcoal BBQ, desi cuisine and fast food. Taste like never before. Order on WhatsApp.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+<style>
+:root{
+  --cream:#f6eddd;
+  --cream-2:#efe3cd;
+  --char:#161008;
+  --char-2:#211709;
+  --flame:#fc4a1a;
+  --flame-text:#c83815; /* High contrast vermilion for text on light backgrounds */
+  --gold:#f2a71b;
+  --ink:#1d1408;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+.display{font-family:'Luckiest Guy',cursive;font-weight:400;line-height:1;letter-spacing:.01em}
+.fun{font-family:'Baloo 2',sans-serif;font-weight:800;letter-spacing:.04em}
+
+/* Section kickers: bubbly sticker badges instead of plain text */
+.kicker{
+  display:inline-block;
+  font-family:'Baloo 2',sans-serif;font-weight:800;
+  font-size:.9rem;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--flame-text);
+  padding:7px 18px;border-radius:999px;
+  border:2.5px solid currentColor;
+  box-shadow:3px 3px 0 rgba(22,16,8,.15);
+  transform:rotate(-2deg);
+  margin-bottom:16px;
+}
+
+/* Section titles: big, bold, cartoon-sticker pop */
+h2.display{
+  font-size:clamp(2.6rem,5.5vw,4.4rem);
+  margin-bottom:14px;
+  text-shadow:.05em .05em 0 rgba(22,16,8,.14);
+}
+
+/* ============ NAV ============ */
+header{
+  position:fixed;inset:0 0 auto 0;z-index:80;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px clamp(16px,4vw,54px);
+  transition:background .4s;
+}
+header.scrolled{background:rgba(246,237,221,.92);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(29,20,8,.08)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{width:54px;height:54px;transition:transform .5s var(--ease)}
+.logo:hover img{transform:rotate(-15deg) scale(1.1)}
+.logo span{font-family:'Luckiest Guy',cursive;font-size:1.5rem;color:var(--flame)}
+nav{display:flex;gap:clamp(14px,3vw,36px)}
+nav a{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;letter-spacing:.05em;opacity:.85;transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s;display:inline-block;}
+nav a:hover{opacity:1;color:var(--flame);transform:scale(1.15) rotate(-3deg)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:.02em;
+  padding:10px 26px;border-radius:999px;
+  background:var(--char);color:var(--cream);
+  transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, box-shadow 0.4s;
+}
+.btn:hover{transform:translateY(-5px) scale(1.05) rotate(-1deg);background:var(--flame);box-shadow:0 15px 30px rgba(252, 74, 26, 0.45)}
+.btn-flame{background:var(--flame);box-shadow:0 8px 20px rgba(252, 74, 26, 0.35)}
+.btn-flame:hover{background:var(--char);box-shadow:0 15px 30px rgba(22,16,8,0.4)}
+.btn-big{font-size:1.4rem;padding:16px 44px}
+
+/* ============ INTERACTIVE SCROLL ZONE & HERO/ABOUT ============ */
+.scroll-zone {
+  position: relative;
+  height: 200vh;
+  background: var(--cream);
+  overflow: visible;
+}
+.sticky-dish-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+.dish-track {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-dish {
+  position: relative;
+  width: clamp(360px, 50vw, 640px);
+  height: clamp(360px, 50vw, 640px);
+  will-change: transform;
+  pointer-events: auto;
+}
+#chickenCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: auto;
+  cursor: grab;
+  filter: drop-shadow(0 40px 60px rgba(29,20,8,.35));
+}
+#chickenCanvas:active {
+  cursor: grabbing;
+}
+.dish-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 40px 80px rgba(29,20,8,0.35);
+  display: none;
+}
+
+/* floating garnish */
+.garnish{position:absolute;z-index:3;will-change:transform;filter:drop-shadow(0 14px 22px rgba(29,20,8,.3));pointer-events:none}
+.g1{width:120px;top:6%;left:12%}
+.g2{width:90px;bottom:14%;right:10%}
+.g3{width:110px;top:38%;right:16%}
+
+/* Sections Content Overlay */
+.sections-content {
+  position: relative;
+  margin-top: -100vh; /* Overlay the 200vh scroll-zone */
+}
+.hero-section, .about-section {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  padding: 110px clamp(16px, 6vw, 80px) 50px;
+  position: relative;
+}
+.about-section {
+  grid-template-columns: 0.85fr 1.15fr;
+}
+.about-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--flame);
+  z-index: 1;
+  pointer-events: none;
+}
+.col-left, .col-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 20;
+}
+.hero-section .col-left {
+  align-items: flex-start;
+  text-align: left;
+}
+.about-section .col-right {
+  align-items: flex-start;
+  text-align: left;
+  padding-left: clamp(20px, 4vw, 60px);
+}
+
+.hero-title {
+  font-size: clamp(3rem, 7vw, 6rem);
+  color: var(--ink);
+  position: relative;
+  z-index: 21;
+}
+.hero-title .line2 {
+  display: block;
+  color: var(--flame);
+  text-shadow: .05em .05em 0 rgba(22,16,8,.2);
+  margin-top: .05em;
+}
+.hero-sub {
+  position: relative;
+  z-index: 21;
+  margin-top: 18px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+  color: var(--ink);
+  opacity: .85;
+}
+.hero-cta {
+  position: relative;
+  z-index: 21;
+  margin-top: 22px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+/* Reviews Widget */
+.reviews-widget {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 36px;
+  background: rgba(255,255,255,0.45);
+  border: 2px solid var(--ink);
+  padding: 10px 22px;
+  border-radius: 999px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.avatar-group {
+  display: flex;
+  align-items: center;
+}
+.avatar-group img, .avatar-more {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--cream);
+  margin-left: -12px;
+  object-fit: cover;
+}
+.avatar-group img:first-child {
+  margin-left: 0;
+}
+.avatar-more {
+  background: var(--char);
+  color: var(--cream);
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rating-info {
+  display: flex;
+  flex-direction: column;
+}
+.rating-info .stars {
+  color: var(--gold);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.rating-info span {
+  font-size: 0.95rem;
+  color: var(--ink);
+  opacity: 0.85;
+}
+
+/* About Us Section Styling */
+.about-section h2 {
+  color: var(--cream) !important;
+}
+.about-section h2 .fl {
+  color: var(--gold);
+}
+.about-section .kicker {
+  color: var(--cream) !important;
+  opacity: 0.95;
+}
+.about-desc {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  opacity: 0.95;
+  margin: 16px 0 24px;
+  max-width: 55ch;
+  line-height: 1.45;
+  color: var(--cream);
+}
+.about-features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
+  width: 100%;
+}
+.about-feat {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.feat-number {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--char);
+  background: var(--cream);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  flex-shrink: 0;
+}
+.about-feat b {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  color: var(--cream);
+  display: block;
+  margin-bottom: 2px;
+}
+.about-feat p {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  opacity: 0.85;
+  line-height: 1.35;
+  color: var(--cream);
+}
+
+/* Mobile 3D dish slot (canvas is moved here on small screens) */
+.mobile-dish-3d {
+  display: none;
+}
+
+/* ============ MARQUEE ============ */
+.marquee{
+  background:var(--flame);color:var(--cream);
+  padding:14px 0;overflow:hidden;white-space:nowrap;
+  transform:rotate(-1.2deg) scale(1.02);
+  position: relative;z-index: 30;
+}
+.marquee-inner{display:inline-block;animation:marq 22s linear infinite}
+.marquee span{
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:.04em;
+  margin:0 22px;
+}
+.marquee span i{font-style:normal;color:var(--char)}
+@keyframes marq{to{transform:translateX(-50%)}}
+.marquee.dark{background:var(--char);transform:rotate(1.2deg) scale(1.02)}
+.marquee.dark span i{color:var(--gold)}
+
+/* ============ STATS ============ */
+.stats {
+  background: var(--char-2);
+  color: var(--cream);
+  padding: 110px clamp(16px,6vw,80px) 90px;
+  text-align: center;
+  position: relative;
+}
+.stats h2 {
+  color: var(--cream);
+}
+.stats .kicker {
+  color: var(--gold);
+}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;max-width:1000px;margin:0 auto}
+.stat{
+  background:var(--flame);border:3px solid var(--ink);border-radius:22px;
+  padding:38px 24px;box-shadow:8px 8px 0 var(--ink);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s;
+  opacity:0;transform:translateY(30px);
+}
+.stat.visible{opacity:1;transform:translateY(0)}
+.stat:hover{transform:translateY(-8px) rotate(-1.5deg);border-color:var(--gold);box-shadow:12px 12px 0 var(--char)}
+.stat b{font-family:'Luckiest Guy',cursive;font-size:2.8rem;display:block;color:#ffffff;text-shadow:2px 2px 0 var(--char)}
+.stat span{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;line-height:1.3;color:var(--cream);opacity:0.95}
+
+/* ============ MENU ============ */
+.menu-sec{
+  background:var(--cream);color:var(--ink);padding:110px clamp(16px,6vw,80px);text-align:center;
+  position: relative;
+  overflow: hidden;
+}
+.menu-sec::before {
+  content: '';
+  position: absolute;
+  top: -10%; left: -10%;
+  width: 120%; height: 120%;
+  background: radial-gradient(circle at 10% 20%, rgba(252, 74, 26, 0.04) 0%, transparent 50%),
+              radial-gradient(circle at 90% 80%, rgba(242, 167, 27, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+.menu-sec .kicker{color:var(--flame-text)}
+.menu-sec h2 .out{color:var(--gold);-webkit-text-stroke:0;text-shadow:.06em .06em 0 var(--char)}
+
+/* Category Tabs */
+.menu-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  max-width: 1100px;
+  margin: 0 auto 40px;
+  position: relative;
+  z-index: 5;
+}
+.tab-btn {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: .04em;
+  padding: 10px 24px;
+  border-radius: 14px;
+  background: var(--char-2);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+}
+.tab-btn:hover {
+  transform: translateY(-3px) rotate(-1deg);
+  border-color: var(--gold);
+  box-shadow: 6px 6px 0 var(--flame);
+}
+.tab-btn.active {
+  background: var(--gold);
+  color: var(--char);
+  border-color: var(--ink);
+  box-shadow: 4px 4px 0 var(--flame);
+  transform: translateY(-4px) rotate(1deg);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 30px 50px;
+  max-width: 1150px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 5;
+  text-align: left;
+}
+.menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 18px 12px;
+  border-bottom: 1px dashed rgba(22, 16, 8, 0.15);
+  transition: all 0.3s var(--ease);
+  cursor: pointer;
+  border-radius: 12px;
+  opacity: 0;
+}
+.menu-item.visible {
+  opacity: 1;
+  animation: popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: var(--d, 0s);
+}
+.menu-item:hover {
+  background: rgba(22, 16, 8, 0.03);
+  border-bottom-color: var(--flame);
+  transform: translateY(-3px) scale(1.015);
+}
+.menu-item-img {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  flex-shrink: 0;
+  transition: transform 0.4s var(--ease), border-color 0.4s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.menu-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.menu-item:hover .menu-item-img {
+  transform: scale(1.1) rotate(8deg);
+  border-color: var(--gold);
+}
+.menu-item-info {
+  flex-grow: 1;
+}
+.menu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.menu-item-name {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  transition: color 0.25s;
+}
+.menu-item:hover .menu-item-name {
+  color: var(--flame-text);
+}
+.menu-item-price {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 1.1rem;
+  color: var(--flame-text);
+}
+.menu-item-desc {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  line-height: 1.55;
+  max-width: 45ch;
+  color: var(--ink);
+}
+.menu-item-badge {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--flame);
+  letter-spacing: 0.05em;
+  margin-left: 8px;
+  text-transform: uppercase;
+  border: 1px solid var(--flame);
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.size-badge {
+  display: inline-block;
+  background: rgba(246,237,221,0.08);
+  color: var(--gold);
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--gold);
+}
+.menu-item-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+.click-to-order {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--flame-text);
+  text-transform: uppercase;
+  transition: color 0.3s, transform 0.3s;
+  display: inline-block;
+  margin-left: auto;
+}
+.menu-item:hover .click-to-order {
+  color: var(--gold);
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 820px) {
+  .menu-item {
+    padding: 14px 6px;
+  }
+  .menu-item-img {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* ============ STALL / CTA ============ */
+.stall{
+  display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px;
+  padding:110px clamp(16px,6vw,80px);background:var(--char-2);overflow:hidden;
+  color:var(--cream);
+}
+.stall img{filter:drop-shadow(0 30px 50px rgba(0,0,0,.55));will-change:transform}
+.stall h2{text-align:left;margin-bottom:18px;color:var(--cream)}
+.stall h2 .fl{color:var(--gold)}
+.stall .kicker{color:var(--gold)}
+.stall p {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  max-width: 48ch;
+  line-height: 1.45;
+  opacity: .9;
+  margin-bottom: 28px;
+  color: var(--cream);
+}
+
+/* ============ FINAL CTA ============ */
+.final{
+  position:relative;background:var(--flame);color:var(--cream);
+  text-align:center;padding:120px 16px;overflow:hidden;
+}
+.final h2{font-size:clamp(3.2rem,10vw,8rem);margin-bottom:10px}
+.final p{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:34px;opacity:.9}
+.final .btn{background:var(--char)}
+.final .btn:hover{background:var(--cream);color:var(--char)}
+.final .garnish{opacity:.9}
+.fg1{width:130px;top:12%;left:8%}
+.fg2{width:100px;bottom:12%;right:9%}
+
+/* ============ FOOTER ============ */
+footer{background:var(--char);color:var(--cream);padding:56px clamp(16px,6vw,80px) 36px;text-align:center}
+footer .logo{justify-content:center;margin-bottom:16px}
+footer .fun{font-size:1.3rem;opacity:.85}
+footer .contact{margin:14px 0 26px;font-size:.9rem;line-height:2;opacity:.75}
+footer .contact a{color:var(--gold)}
+.foot-note{font-size:.75rem;opacity:.4;border-top:1px solid rgba(246,237,221,.12);padding-top:20px}
+
+/* Bouncy Scroll Reveal Animations — everything POPS in */
+.reveal {
+  opacity: 0;
+  transform: translateY(70px) scale(0.55) rotate(-2deg);
+  transition: opacity 0.5s ease-out,
+              transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(50px) scale(0.6) rotate(-2deg); }
+}
+
+/* Sequential Reveal Delays */
+.delay-1 { transition-delay: 0.1s !important; }
+.delay-2 { transition-delay: 0.2s !important; }
+.delay-3 { transition-delay: 0.3s !important; }
+.delay-4 { transition-delay: 0.4s !important; }
+.delay-5 { transition-delay: 0.5s !important; }
+
+/* ============ MOBILE NAVIGATION ============ */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 90;
+  padding: 4px;
+}
+.hamburger span {
+  width: 28px;
+  height: 3px;
+  background: var(--ink);
+  border-radius: 99px;
+  transition: all 0.3s var(--ease);
+}
+.hamburger.open span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+  background: var(--cream);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+  background: var(--cream);
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 16, 8, 0.97);
+  backdrop-filter: blur(15px);
+  z-index: 75;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s var(--ease);
+}
+.mobile-menu-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.mobile-menu-overlay a {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--cream);
+  letter-spacing: 0.05em;
+  transition: color 0.3s, transform 0.3s;
+}
+.mobile-menu-overlay a:hover {
+  color: var(--gold);
+  transform: scale(1.1) rotate(-2deg);
+}
+
+@media (max-width:820px){
+  nav{display:none}
+  .hamburger {
+    display: flex;
+  }
+  header > .btn {
+    display: none;
+  }
+  .scroll-zone {
+    height: auto;
+  }
+  .sticky-dish-wrapper {
+    display: none !important;
+  }
+  .sections-content {
+    margin-top: 0;
+  }
+  .hero-section, .about-section {
+    height: auto;
+    grid-template-columns: 1fr;
+    padding: 100px 16px 40px;
+    text-align: center;
+  }
+  .about-section {
+    padding-top: 40px;
+  }
+  .hero-section .col-left, .about-section .col-right {
+    align-items: center;
+    text-align: center;
+    padding-left: 0;
+  }
+  .about-section .col-left {
+    display: none;
+  }
+  .hero-cta {
+    justify-content: center;
+  }
+  .reviews-widget {
+    margin-inline: auto;
+  }
+  .mobile-dish-3d {
+    display: block;
+    width: clamp(280px, 78vw, 380px);
+    height: clamp(280px, 78vw, 380px);
+    margin: 14px auto 0;
+    position: relative;
+  }
+  .g1{width:70px;left:2%}.g2{width:54px;right:2%}.g3{display:none}
+  .stall{grid-template-columns:1fr;text-align:center}
+  .stall h2{text-align:center}
+  .stall p{margin-inline:auto}
+  .loader-logo {
+    width: 170px;
+    height: 170px;
+  }
+}
+
+/* ============ CINEMATIC LOADER ============ */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--flame);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.loader-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.loader-logo {
+  width: 240px;
+  height: 240px;
+  filter: drop-shadow(0 0 45px rgba(255, 248, 236, 0.85)) drop-shadow(0 15px 30px rgba(0,0,0,0.4));
+  opacity: 0;
+  transform: scale(0.3) rotate(-30deg);
+  animation: cinematicReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-dish-bob {
+  width: 100%;
+  height: 100%;
+  animation: dishBob 6s ease-in-out infinite;
+}
+@keyframes dishBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+.loader-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  color: var(--cream);
+  opacity: 0;
+  transform: translateY(25px);
+  animation: cinematicTitle 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+  text-shadow: 4px 4px 0 var(--char);
+}
+@keyframes cinematicReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-45deg);
+  }
+  70% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+@keyframes cinematicTitle {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  70% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+body.loaded #loader {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============ SCROLL PROGRESS BAR ============ */
+.scroll-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: rgba(22, 16, 8, 0.08);
+  z-index: 10000;
+  pointer-events: none;
+}
+.scroll-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--flame));
+  box-shadow: 0 0 10px var(--flame);
+  position: relative;
+}
+.scroll-progress-bar::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -4px;
+  width: 13px;
+  height: 13px;
+  background: var(--flame);
+  border-radius: 50% 50% 0 50%;
+  transform: rotate(-45deg);
+  box-shadow: 0 0 10px var(--flame);
+}
+
+/* ============ CUSTOM CURSOR FOLLOWER ============ */
+.cursor-follower {
+  position: fixed;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--flame);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  transition: width 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              height 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              background-color 0.25s, border-color 0.25s;
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cursor-follower {
+    display: block;
+  }
+}
+.cursor-follower.hovering {
+  width: 44px;
+  height: 44px;
+  background: rgba(252, 74, 26, 0.15);
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(252, 74, 26, 0.5);
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress-container">
+  <div class="scroll-progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Custom Cursor Follower -->
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- Cinematic Loader Overlay -->
+<div id="loader">
+  <div class="loader-content">
+    <img src="assets/logo.png" alt="Elite Grill Logo" class="loader-logo">
+    <h1 class="loader-title display">Elite Grill</h1>
+  </div>
+</div>
+
+<header id="header">
+  <a class="logo" href="#"><img src="assets/logo.png" alt="Elite Grill logo"><span>Elite Grill</span></a>
+  <nav>
+    <a href="#menu">Menu</a>
+    <a href="#about">About Us</a>
+    <a href="#stall">BBQ Stall</a>
+  </nav>
+  <a class="btn btn-flame" href="https://wa.me/923258100422" target="_blank" rel="noopener">Order Now</a>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle mobile menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobileMenu">
+  <a href="#menu">Menu</a>
+  <a href="#about">About Us</a>
+  <a href="#stall">BBQ Stall</a>
+  <a class="btn btn-flame btn-big" href="https://wa.me/923258100422" target="_blank" rel="noopener" style="margin-top:20px;">Order Now</a>
+</div>
+
+<!-- ============ INTERACTIVE SCROLL ZONE ============ -->
+<div class="scroll-zone" id="scrollZone">
+  <!-- Sticky dish wrapper -->
+  <div class="sticky-dish-wrapper">
+    <div class="dish-track">
+      <div class="hero-dish" id="heroDish">
+        <img class="garnish g1" src="assets/d11.png" alt="" data-speed="0.18" data-float="1">
+        <img class="garnish g2" src="assets/d15.png" alt="" data-speed="-0.12" data-float="2">
+        <img class="garnish g3" src="assets/d13.png" alt="" data-speed="0.1" data-float="3">
+        <div class="hero-dish-bob">
+          <canvas id="chickenCanvas"></canvas>
+          <img class="dish-fallback" id="dishFallback" src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=900&q=80&fit=crop" alt="Crispy fried chicken">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sections Content overlay -->
+  <div class="sections-content">
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="col-left" style="position:relative; z-index:5;">
+        <h1 class="hero-title display reveal">FLAME GRILLED<span class="line2">FULLY LOADED</span></h1>
+
+        <!-- Mobile 3D dish slot (canvas moves here on small screens) -->
+        <div class="mobile-dish-3d" id="mobileDishSlot"></div>
+
+        <p class="hero-sub reveal delay-1">Charcoal B.B.Q &amp; Fast Food — Taste Like Never Before</p>
+        <div class="hero-cta reveal delay-2">
+          <a class="btn btn-flame btn-big" href="https://wa.me/923258100422" target="_blank" rel="noopener">Order on WhatsApp</a>
+          <a class="btn" href="#menu">See the menu</a>
+        </div>
+        
+        <!-- Reviews Widget -->
+        <div class="reviews-widget reveal delay-3">
+          <div class="avatar-group">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&fit=crop&q=80" alt="Reviewer 1">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&fit=crop&q=80" alt="Reviewer 2">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&fit=crop&q=80" alt="Reviewer 3">
+            <div class="avatar-more">45+</div>
+          </div>
+          <div class="rating-info">
+            <div class="stars">★★★★★</div>
+            <span class="fun">5-Star Reviews</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <!-- Spacer for desktop sticky dish -->
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+      <div class="about-bg"></div>
+      <div class="col-left"></div>
+      <div class="col-right">
+        <p class="kicker reveal">About Elite Grill</p>
+        <h2 class="display reveal delay-1">It's Not Just Food,<br><span class="fl">It's An Experience.</span></h2>
+        <p class="about-desc reveal delay-2">At Elite Grill, we bring the authentic Lahore street-style charcoal grill and fast food directly to your table. Every slice, patty, and cut is prepared fresh daily, marinated in our home-ground masala, and served flame-grilled to sizzling perfection.</p>
+        
+        <div class="about-features">
+          <div class="about-feat reveal delay-3">
+            <span class="feat-number display">01</span>
+            <div>
+              <b>100% Charcoal Smoke</b>
+              <p>Real fire, real smoke, no artificial flavors. Taste the authentic difference.</p>
+            </div>
+          </div>
+          <div class="about-feat reveal delay-4">
+            <span class="feat-number display">02</span>
+            <div>
+              <b>Fresh Marination</b>
+              <p>Hand-cut meat marinated daily with pure desi spices and fresh ingredients.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top:34px;" class="reveal delay-5">
+          <a class="btn btn-big" href="#menu">Explore Menu</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee"><div class="marquee-inner" id="mq1"></div></div>
+
+<!-- ============ STATS ============ -->
+<section class="stats">
+  <p class="kicker reveal">Why Elite Grill</p>
+  <h2 class="display reveal delay-1">Smoke. Spice.<br>Nothing Else.</h2>
+  <div class="stat-grid">
+    <div class="stat reveal delay-2"><b>100%</b><span>Charcoal fired — real smoke, real flame</span></div>
+    <div class="stat reveal delay-3"><b>Fresh</b><span>Marinated daily in our own desi masala</span></div>
+    <div class="stat reveal delay-4"><b>Halal</b><span>Locally sourced meat, hand cut every day</span></div>
+    <div class="stat reveal delay-5"><b>1 Call</b><span>WhatsApp us — hot food, straight to you</span></div>
+  </div>
+</section>
+
+<div class="marquee dark"><div class="marquee-inner" id="mq2"></div></div>
+
+<!-- ============ MENU ============ -->
+<section class="menu-sec" id="menu">
+  <p class="kicker reveal">Taste like never before</p>
+  <h2 class="display reveal delay-1">The <span class="out">Elite</span> Menu</h2>
+  
+  <!-- Category Tabs -->
+  <div class="menu-tabs reveal delay-2">
+    <button class="tab-btn active" data-category="bbq">BBQ &amp; Wok</button>
+    <button class="tab-btn" data-category="burgers">Burgers</button>
+    <button class="tab-btn" data-category="pizzas">Pizzas</button>
+    <button class="tab-btn" data-category="rolls">Wraps &amp; Rolls</button>
+    <button class="tab-btn" data-category="sandwiches">Sandwiches</button>
+    <button class="tab-btn" data-category="pastas">Pasta &amp; Fried Chicken</button>
+    <button class="tab-btn" data-category="sides">Fries &amp; Sides</button>
+    <button class="tab-btn" data-category="drinks">Drinks</button>
+  </div>
+  
+  <div class="menu-grid" id="menuGrid"></div>
+</section>
+
+<!-- ============ STALL ============ -->
+<section class="stall" id="stall">
+  <div><img id="stallImg" class="reveal" src="assets/d22.png" alt="Elite Grill BBQ platter, karahi and seekh kebabs"></div>
+  <div>
+    <p class="kicker reveal">Events &amp; catering</p>
+    <h2 class="display reveal delay-1">Your Own <span class="fl">BBQ Stall.</span><br>One Call Away.</h2>
+    <p class="reveal delay-2">Shaadi, dawat, office party — any event you plan is incomplete without our taste. Live charcoal grill at your venue, seekh kebabs off the skewer, karahi cooked on the spot. Anywhere in Lahore.</p>
+    <a class="btn btn-flame btn-big reveal delay-3" href="https://wa.me/923258100422" target="_blank" rel="noopener">Book your stall</a>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final">
+  <img class="garnish fg1" src="assets/d11.png" alt="" data-speed="0.15" data-float="1">
+  <img class="garnish fg2" src="assets/d15.png" alt="" data-speed="-0.1" data-float="2">
+  <p class="kicker reveal" style="color:var(--cream)">Hungry yet?</p>
+  <h2 class="display reveal">FEEL THE FLAME</h2>
+  <p class="reveal">Grilled for the bold. Built for the hungry.</p>
+  <a class="btn btn-big reveal" href="https://wa.me/923258100422" target="_blank" rel="noopener">Order on WhatsApp</a>
+</section>
+
+<footer>
+  <a class="logo" href="#"><img src="assets/logo.png" alt="Elite Grill logo"><span>Elite Grill</span></a>
+  <p class="fun">B.B.Q Grill &amp; Fast Food — Khayaban-e-Ameen, Lahore</p>
+  <p class="contact">
+    Address: A-Block Market, Khayaban-e-Ameen, Lahore<br>
+    Opening Hours: 12:00 PM - 3:00 AM Daily<br>
+    WhatsApp: <a href="https://wa.me/923258100422">0325 8100422</a> ·
+    <a href="mailto:admin@elitegrill.pk">admin@elitegrill.pk</a>
+  </p>
+  <p class="foot-note">Elite Grill — Taste like never before.</p>
+</footer>
+
+<script>
+/* ====== DATA ====== */
+const MENU_DATA = {
+  starters: [
+    { name: "BBQ Wings", price: "Rs 475 / 900", desc: "Smoky charcoal-grilled wings, tossed in BBQ glaze.", size: "6 Pcs / 12 Pcs" },
+    { name: "Grilled Wings", price: "Rs 475 / 900", desc: "Flame-grilled wings with signature spices.", size: "6 Pcs / 12 Pcs" },
+    { name: "Fried Wings", price: "Rs 525 / 1,000", desc: "Crispy golden fried wings.", size: "6 Pcs / 12 Pcs" },
+    { name: "Honey Wings", price: "Rs 500 / 1,000", desc: "Sweet and savory honey-glazed wings.", size: "6 Pcs / 12 Pcs" },
+    { name: "Korean Wings", price: "Rs 525 / 1,000", desc: "Sweet, spicy, and sticky Korean style wings.", size: "6 Pcs / 12 Pcs" },
+    { name: "Dynamite Wings", price: "Rs 525 / 1,000", desc: "Tossed in spicy, creamy dynamite sauce.", size: "6 Pcs / 12 Pcs" },
+    { name: "Chicken Nuggets", price: "Rs 375 / 650", desc: "Crispy breaded chicken breast nuggets.", size: "6 Pcs / 12 Pcs" }
+  ],
+  burgers: [
+    { name: "Grill BBQ Burger", price: "Rs 550", desc: "Flame-grilled juicy patty with smoky BBQ sauce." },
+    { name: "Jalapeno Burger", price: "Rs 550", desc: "Grilled patty topped with spicy jalapenos and sauce." },
+    { name: "Chicken Cheese Burger", price: "Rs 400", desc: "Juicy chicken patty with melted cheddar cheese." },
+    { name: "Chicken Patty Burger", price: "Rs 400", desc: "Golden fried crispy chicken patty burger." },
+    { name: "Zinger Burger", price: "Rs 430", desc: "Our signature crispy fried chicken zinger burger." },
+    { name: "Elite Special Burger", price: "Rs 600", desc: "Double patty, double cheese, and special house sauce." },
+    { name: "Fillet Burger", price: "Rs 625", desc: "Tender grilled chicken fillet burger." },
+    { name: "Classic Beef Burger", price: "Rs 700", desc: "Flame-grilled premium beef patty, lettuce, cheese." },
+    { name: "Elite Beef Burger", price: "Rs 1,000", desc: "Double beef patty, loaded with cheese and Elite sauce." },
+    { name: "Lacha Burger", price: "Rs 500", desc: "Unique layered Lahori style crispy burger." },
+    { name: "Lacha Zinger", price: "Rs 600", desc: "Crispy zinger wrapped in layered golden lacha." }
+  ],
+  pizzas: [
+    { name: "Classic Tikka Pizza", price: "Rs 650 / 1,050 / 1,400", desc: "Spiced chicken tikka, onions, mozzarella.", size: "S / M / L" },
+    { name: "Classic Fajita Pizza", price: "Rs 650 / 1,050 / 1,400", desc: "Fajita chicken, bell peppers, onions.", size: "S / M / L" },
+    { name: "Classic Mughlai Pizza", price: "Rs 650 / 1,050 / 1,400", desc: "Rich mughlai chicken base, creamy cheese.", size: "S / M / L" },
+    { name: "Classic Supreme Pizza", price: "Rs 650 / 1,050 / 1,400", desc: "Loaded with chicken, olives, mushrooms, peppers.", size: "S / M / L" },
+    { name: "Classic Veggie Pizza", price: "Rs 650 / 1,050 / 1,400", desc: "Fresh tomatoes, onions, olives, peppers, mushrooms.", size: "S / M / L" },
+    { name: "Classic Cheezy Pizza", price: "Rs 650 / 1,050 / 1,400", desc: "Loaded with triple premium mozzarella cheese.", size: "S / M / L" },
+    { name: "Signature Crown Crust", price: "Rs 1,250 / 1,700", desc: "Crown shaped crust filled with cheese & kabab.", size: "M / L" },
+    { name: "Signature Pepperoni", price: "Rs 1,250 / 1,700", desc: "Loaded pepperoni, mozzarella, tomato base.", size: "M / L" },
+    { name: "Signature Mexican Pizza", price: "Rs 1,250 / 1,700", desc: "Spicy Mexican chicken, jalapenos, sweet corn.", size: "M / L" },
+    { name: "Signature Malai Tikka", price: "Rs 1,250 / 1,700", desc: "Creamy malai tikka boti, white sauce, onions.", size: "M / L" },
+    { name: "Signature Behari Kabab Pizza", price: "Rs 1,250 / 1,700", desc: "Spiced behari kabab pieces, onions, cilantro.", size: "M / L" },
+    { name: "Signature Kababish Pizza", price: "Rs 1,250 / 1,700", desc: "Combination of seekh kabab pieces and spices.", size: "M / L" }
+  ],
+  sandwiches: [
+    { name: "Club Sandwich", price: "Rs 500 / 625", desc: "Classic layered club sandwich with egg and chicken.", size: "Classic / Signature" },
+    { name: "Crispy Chicken Sandwich", price: "Rs 500 / 625", desc: "Crispy fried chicken fillet in sandwich bread.", size: "Classic / Signature" },
+    { name: "Grill Chicken Sandwich", price: "Rs 525 / 675", desc: "Flame-grilled chicken breast, light mayo, lettuce.", size: "Classic / Signature" },
+    { name: "Korean Sandwich", price: "Rs 700", desc: "Spicy and sweet Korean fried chicken sandwich." },
+    { name: "Elite Special Sandwich", price: "Rs 700", desc: "Our double layered signature loaded sandwich." }
+  ],
+  rolls: [
+    { name: "Mexican Wrap", price: "Rs 575", desc: "Spicy Mexican chicken wrapped with salsa and sour cream." },
+    { name: "Chicken Cheese Wrap", price: "Rs 550", desc: "Creamy chicken wrap with melted cheddar cheese." },
+    { name: "Elite Special Wrap", price: "Rs 625", desc: "Loaded signature wrap with grilled chicken and cheese." },
+    { name: "Korean Wrap", price: "Rs 575", desc: "Sticky Korean glazed chicken wrap." },
+    { name: "Jalapeno Roll", price: "Rs 550", desc: "Chicken and cheese roll with kick of jalapeno." },
+    { name: "Grill Chicken Roll", price: "Rs 500", desc: "Classic flame-grilled chicken roll in flatbread." },
+    { name: "Twister Roll", price: "Rs 550", desc: "Crispy zinger strips in twister wrap with signature sauce." },
+    { name: "Elite Special Roll", price: "Rs 600", desc: "Our custom loaded roll with extra meat and cheese." },
+    { name: "Classic Shawarma", price: "Rs 325", desc: "Authentic chicken shawarma in pita with garlic sauce." },
+    { name: "Zinger Shawarma", price: "Rs 350", desc: "Crispy zinger chicken shawarma wrap." },
+    { name: "Platter Shawarma", price: "Rs 600", desc: "Deconstructed shawarma served with extra pita and dips." },
+    { name: "Chicken Paratha Roll", price: "Rs 400", desc: "Grilled chicken boti wrapped in crispy fried paratha." },
+    { name: "Zinger Paratha Roll", price: "Rs 400", desc: "Crispy chicken zinger wrapped in flaky paratha." }
+  ],
+  pastas: [
+    { name: "Mexican Pasta", price: "Rs 600", desc: "Penne pasta in spicy tomato sauce with Mexican chicken." },
+    { name: "Alfredo Pasta", price: "Rs 750", desc: "Fettuccine in rich, creamy white sauce with grilled chicken." },
+    { name: "Crispy Chicken Pasta", price: "Rs 750", desc: "Creamy macaroni topped with crispy golden fried chicken." },
+    { name: "Korean Pasta", price: "Rs 750", desc: "Spicy Korean style noodles with stir-fried chicken." },
+    { name: "Fried Chicken - 1 Piece", price: "Rs 250", desc: "One piece of our signature crispy golden fried chicken." },
+    { name: "Fried Chicken - 3 Pieces", price: "Rs 650", desc: "Three pieces of crispy golden fried chicken." },
+    { name: "Fried Chicken - 5 Pieces", price: "Rs 1,100", desc: "Five pieces of crispy golden fried chicken." }
+  ],
+  sides: [
+    { name: "Plain Fries (Regular)", price: "Rs 200", desc: "Salted crispy golden potato french fries." },
+    { name: "Plain Fries (Large)", price: "Rs 350", desc: "Large serving of salted french fries." },
+    { name: "Garlic Mayo Fries", price: "Rs 400", desc: "Fries drizzled with thick garlic mayo sauce." },
+    { name: "Masala Fries", price: "Rs 400", desc: "Fries tossed in spicy Pakistani chat masala." },
+    { name: "BBQ Fries", price: "Rs 350", desc: "Fries drizzled with smoky BBQ sauce." },
+    { name: "Classic Loaded Fries", price: "Rs 600", desc: "Fries loaded with cheese sauce, jalapenos, olives." },
+    { name: "Elite Loaded Fries", price: "Rs 675", desc: "Fries topped with grilled chicken, cheese, Elite sauce." },
+    { name: "Extra Dip Sauce", price: "Rs 100", desc: "Behari, Korean, Thousand Island, Garlic Mayo, or Caramel Crunch." }
+  ],
+  drinks: [
+    { name: "Cola (300 ml)", price: "Rs 80", desc: "Chilled soft drink can." },
+    { name: "Cola (500 ml)", price: "Rs 110", desc: "Chilled soft drink bottle." },
+    { name: "Cola (1 Ltr)", price: "Rs 150", desc: "Family size chilled soft drink." },
+    { name: "Cola (1.5 Ltr)", price: "Rs 200", desc: "Extra large chilled soft drink." },
+    { name: "Lemon (300 ml)", price: "Rs 80", desc: "Refreshing lemon soda." },
+    { name: "Lemon (500 ml)", price: "Rs 110", desc: "Chilled lemon soft drink." },
+    { name: "Lemon (1 Ltr)", price: "Rs 150", desc: "Large lemon soft drink." },
+    { name: "Lemon (1.5 Ltr)", price: "Rs 200", desc: "Family size lemon drink." },
+    { name: "Mineral Water (500 ml)", price: "Rs 60", desc: "Pure clean drinking water." },
+    { name: "Mineral Water (1.5 Ltr)", price: "Rs 120", desc: "Large mineral water bottle." }
+  ]
+};
+
+const CATEGORY_IMAGES = {
+  bbq: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80&fit=crop", 
+  burgers: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80&fit=crop", 
+  pizzas: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80&fit=crop", 
+  rolls: "https://images.unsplash.com/photo-1626700051175-6518c4793f76?w=600&q=80&fit=crop", 
+  sandwiches: "https://images.unsplash.com/photo-1521390188846-e2a3a97453a0?w=600&q=80&fit=crop", 
+  pastas: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=600&q=80&fit=crop", 
+  sides: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&q=80&fit=crop", 
+  drinks: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80&fit=crop" 
+};
+
+const ITEM_IMAGES = {
+  "Chicken Karahi": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80&fit=crop",
+  "Elite B.B.Q Platter": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&fit=crop",
+  "Chicken Tikka": "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600&q=80&fit=crop",
+  "Grilled Fish": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80&fit=crop",
+  "Classic Loaded Fries": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&q=80&fit=crop",
+  "Elite Loaded Fries": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&q=80&fit=crop",
+  "Zinger Burger": "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600&q=80&fit=crop",
+  "Alfredo Pasta": "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=600&q=80&fit=crop",
+  "Classic Tikka Pizza": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80&fit=crop",
+  "Signature Crown Crust": "https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=600&q=80&fit=crop"
+};
+
+const $ = id => document.getElementById(id);
+
+/* ====== hero 3D chicken state ====== */
+let targetRotation = { x: 0.2, y: 0.5, z: 0.1 };
+const MAX_TILT = 0.55; // max X tilt (rad) while dragging — keeps the fit clip-free
+
+// Three.js global variables
+let scene, camera, renderer, chickenMesh = null;
+let isDragging = false;
+let previousMousePosition = { x: 0, y: 0 };
+
+/* ====== garnish parallax ====== */
+const garnishes = [...document.querySelectorAll(".garnish")];
+const scrollZone = $("scrollZone");
+const heroDish = $("heroDish");
+
+function loop(t) {
+  const isMobile = window.innerWidth <= 820;
+  
+  if (!isMobile) {
+    // Desktop: Sticky slide-down horizontal translation
+    if (scrollZone && heroDish) {
+      const rect = scrollZone.getBoundingClientRect();
+      const totalScroll = rect.height - window.innerHeight;
+      let progress = 0;
+      if (totalScroll > 0) {
+        progress = -rect.top / totalScroll;
+        progress = Math.min(Math.max(progress, 0), 1);
+      }
+      
+      const translateX = 25 - (50 * progress);
+      
+      // Horizontal translate-only in CSS; the model itself stays static.
+      heroDish.style.transform = `translateX(${translateX}vw)`;
+
+      garnishes.forEach(g=>{
+        const s = parseFloat(g.dataset.speed||0.1);
+        const f = parseFloat(g.dataset.float||1);
+        const bob = Math.sin(t/900 + f*2) * 14;
+        const drift = progress * s * 60;
+        g.style.transform = `translate(${drift}px, ${bob}px) rotate(${Math.sin(t/1400+f)*12}deg)`;
+      });
+    }
+  }
+  
+  const stall = $("stallImg");
+  if (stall) { 
+    const r = stall.getBoundingClientRect();
+    if (r.top < innerHeight && r.bottom > 0) {
+      stall.style.transform = `translateY(${(r.top-innerHeight/2)*0.06}px)`; 
+    }
+  }
+  
+  // Render Three.js scene
+  if (renderer && scene && camera) {
+    if (chickenMesh && !isDragging) {
+      // Continuous idle showcase spin — never tied to scroll position
+      chickenMesh.rotation.y += isMobile ? 0.008 : 0.005;
+      chickenMesh.rotation.x += (targetRotation.x - chickenMesh.rotation.x) * 0.08;
+      chickenMesh.rotation.z += (targetRotation.z - chickenMesh.rotation.z) * 0.08;
+    }
+    renderer.render(scene, camera);
+  }
+  
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ====== marquees ====== */
+const words = ["B.B.Q GRILL","FAST FOOD","TASTE LIKE NEVER BEFORE","CHARCOAL FIRED","LAHORE"];
+const strip = words.map(w=>`<span>${w} <i>&#9679;</i></span>`).join("");
+$("mq1").innerHTML = strip + strip;
+$("mq2").innerHTML = strip + strip;
+
+/* ====== menu rendering & tab switching ====== */
+const ITEM_META = {
+  "Chicken Karahi": { badge: "Best Seller" },
+  "Elite B.B.Q Platter": { badge: "Must Try" },
+  "Chicken Tikka": { badge: "Popular" },
+  "Grilled Fish": { badge: "Chef Special" },
+  "BBQ Wings": { badge: "Smoky" },
+  "Korean Wings": { badge: "Sticky" },
+  "Dynamite Wings": { badge: "Extra Hot" },
+  "Chicken Nuggets": { badge: "Kids Choice" },
+  "Grill BBQ Burger": { badge: "Flame Grilled" },
+  "Jalapeno Burger": { badge: "Spicy Kick" },
+  "Elite Burger": { badge: "Best Seller" },
+  "Elite Special Burger": { badge: "Double Cheese" },
+  "Elite Beef Burger": { badge: "Double Loaded" },
+  "Classic Tikka Pizza": { badge: "Popular" },
+  "Signature Crown Crust": { badge: "Signature" },
+  "Signature Pepperoni": { badge: "Classic" },
+  "Signature Mexican Pizza": { badge: "Spicy" },
+  "Club Sandwich": { badge: "Classic" },
+  "Korean Sandwich": { badge: "New" },
+  "Elite Special Sandwich": { badge: "Loaded" },
+  "Mexican Wrap": { badge: "Spicy Wrap" },
+  "Elite Special Wrap": { badge: "Chef Choice" },
+  "Zinger Paratha Roll": { badge: "Crispy" },
+  "Alfredo Pasta": { badge: "Creamy White" },
+  "Crispy Chicken Pasta": { badge: "Cheesy" },
+  "Korean Pasta": { badge: "Hot Noodles" },
+  "Elite Loaded Fries": { badge: "Recommended" },
+  "Classic Loaded Fries": { badge: "Best Seller" }
+};
+
+function renderMenu(category) {
+  const grid = $("menuGrid");
+  let items = [];
+  if (category === "bbq") {
+    items = [
+      { name: "Chicken Karahi", price: "Rs 1,450", desc: "Sizzling wok, fresh tomatoes, green chillies, secret desi masala." },
+      { name: "Elite B.B.Q Platter", price: "Rs 1,850", desc: "Seekh kebabs and charcoal tikka, smoking hot with chutney and naan." },
+      { name: "Chicken Tikka", price: "Rs 550", desc: "Charcoal-kissed leg piece, marinated overnight." },
+      { name: "Grilled Fish", price: "Rs 1,200", desc: "Lahori-style spiced fish, grilled whole on open flame." }
+    ];
+  } else {
+    items = MENU_DATA[category] || [];
+  }
+  
+  grid.innerHTML = items.map((d, idx) => {
+    const imgUrl = ITEM_IMAGES[d.name] || CATEGORY_IMAGES[category] || CATEGORY_IMAGES.bbq;
+    const sizeBadge = d.size ? `<span class="size-badge">${d.size}</span>` : "";
+    
+    const meta = ITEM_META[d.name] || {};
+    const badgeText = meta.badge ? `<span class="menu-item-badge">${meta.badge}</span>` : "";
+    
+    const waText = `Hi Elite Grill! I want to order the *${d.name}* (${d.price}).`;
+    const waUrl = `https://wa.me/923258100422?text=${encodeURIComponent(waText)}`;
+    
+    return `
+      <a class="menu-item" style="--d:${idx * 55}ms" href="${waUrl}" target="_blank" rel="noopener">
+        <div class="menu-item-img"><img src="${imgUrl}" alt="${d.name}" loading="lazy"></div>
+        <div class="menu-item-info">
+          <div class="menu-item-header">
+            <span class="menu-item-name">${d.name}${badgeText}</span>
+            <span class="menu-item-price">${d.price}</span>
+          </div>
+          <div class="menu-item-body">
+            <p class="menu-item-desc">${d.desc}</p>
+            <div class="menu-item-footer">
+              ${sizeBadge}
+              <span class="click-to-order">Click to Order &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    `;
+  }).join("");
+  
+  document.querySelectorAll("#menuGrid .menu-item").forEach(el => io.observe(el));
+}
+
+// Attach tab listeners
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderMenu(btn.dataset.category);
+  });
+});
+
+/* ====== scroll reveals + nav ====== */
+const io = new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    if(!document.body.classList.contains("loaded") && e.target.closest("#hero")) return;
+    e.target.classList.add("visible");
+    
+    // Animate stats values count up when they enter viewport
+    if (e.target.classList.contains("stat")) {
+      const b = e.target.querySelector("b");
+      if (b && b.textContent.includes("100%")) {
+        animateValue(b, 0, 100, 1200, "%");
+      } else if (b && b.textContent.includes("1 Call")) {
+        animateValue(b, 0, 1, 800, " Call");
+      }
+    }
+    
+    io.unobserve(e.target);
+  }
+}),{threshold:.12});
+
+function animateValue(obj, start, end, duration, suffix = "") {
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
+// Render initial menu (BBQ)
+renderMenu("bbq");
+
+document.querySelectorAll(".reveal,.stat").forEach(el=>io.observe(el));
+addEventListener("scroll",()=>$("header").classList.toggle("scrolled",scrollY>10),{passive:true});
+
+// Mobile navigation toggle
+const hamburger = $("hamburgerBtn");
+const mobileMenu = $("mobileMenu");
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("open");
+    mobileMenu.classList.toggle("open");
+  });
+  
+  mobileMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      hamburger.classList.remove("open");
+      mobileMenu.classList.remove("open");
+    });
+  });
+}
+
+/* ============ DYNAMIC SCROLL PROGRESS ============ */
+addEventListener("scroll", () => {
+  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  if (scrollHeight > 0) {
+    const percent = (window.scrollY / scrollHeight) * 100;
+    const bar = $("progressBar");
+    if (bar) bar.style.width = `${percent}%`;
+  }
+}, { passive: true });
+
+/* ============ CUSTOM CURSOR FOLLOWER ============ */
+const follower = $("cursorFollower");
+if (follower) {
+  let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+  addEventListener("mousemove", e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+  
+  function updateCursor() {
+    followerX += (mouseX - followerX) * 0.18;
+    followerY += (mouseY - followerY) * 0.18;
+    follower.style.left = `${followerX}px`;
+    follower.style.top = `${followerY}px`;
+    requestAnimationFrame(updateCursor);
+  }
+  updateCursor();
+  
+  function attachCursorHover(el) {
+    el.addEventListener("mouseenter", () => follower.classList.add("hovering"));
+    el.addEventListener("mouseleave", () => follower.classList.remove("hovering"));
+  }
+  
+  document.querySelectorAll("a, button, .menu-item, .stat, .tab-btn, #dishSwitch button").forEach(attachCursorHover);
+  
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll(".menu-item").forEach(attachCursorHover);
+  });
+  const menuGrid = document.querySelector(".menu-grid");
+  if (menuGrid) observer.observe(menuGrid, { childList: true });
+}
+
+/* ============ 3D STATS PARALLAX TILT ============ */
+document.querySelectorAll(".stat").forEach(card => {
+  card.addEventListener("mousemove", e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const xc = rect.width / 2;
+    const yc = rect.height / 2;
+    const angleX = (yc - y) / 12;
+    const angleY = (x - xc) / 12;
+    card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(1.05)`;
+  });
+  card.addEventListener("mouseleave", () => {
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+  });
+});
+
+/* ============ CUTE CARTOON POP SOUND (menu section only) ============ */
+let audioCtx = null;
+function playPop() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t0 = audioCtx.currentTime;
+
+    // Bubbly "boip": a sine blip that chirps upward, random pitch each click
+    const base = 480 + Math.random() * 260;
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(base, t0);
+    osc.frequency.exponentialRampToValueAtTime(base * 2.7, t0 + 0.09);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.17);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + 0.18);
+  } catch (e) {
+    console.log("Audio pop synthesis failed", e);
+  }
+}
+// Delegated so menu items keep popping after tab re-renders
+document.querySelector(".menu-sec").addEventListener("click", (e) => {
+  if (e.target.closest(".tab-btn") || e.target.closest(".menu-item")) playPop();
+});
+
+/* ============ THREE.JS 3D MESH INITIALIZER ============ */
+function init3D() {
+  const canvas = document.getElementById("chickenCanvas");
+  if (!canvas) return;
+
+  // On small screens the sticky hero dish is hidden — move the canvas
+  // into the inline mobile slot so the model shows in the hero flow.
+  if (window.innerWidth <= 820) {
+    const slot = document.getElementById("mobileDishSlot");
+    if (slot) slot.appendChild(canvas);
+  }
+
+  // Size from the container, not the canvas: renderer.setSize writes an
+  // inline pixel size on the canvas that goes stale when it changes homes.
+  const width = canvas.parentElement.clientWidth || 450;
+  const height = canvas.parentElement.clientHeight || width;
+
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+  camera.position.set(0, 0, 3.8);
+
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+  scene.add(ambientLight);
+  
+  const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.8);
+  dirLight1.position.set(5, 8, 5);
+  scene.add(dirLight1);
+  
+  const dirLight2 = new THREE.DirectionalLight(0xffe5d9, 1.0);
+  dirLight2.position.set(-5, -3, 3);
+  scene.add(dirLight2);
+  
+  const spotLight = new THREE.SpotLight(0xfc4a1a, 4, 15, Math.PI / 4, 0.5, 1);
+  spotLight.position.set(-2, 4, 4);
+  scene.add(spotLight);
+  
+  // Load Draco-compressed model (805 KB — decoder wasm streams from CDN)
+  const loader = new THREE.GLTFLoader();
+  const dracoLoader = new THREE.DRACOLoader();
+  dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.4.1/");
+  loader.setDRACOLoader(dracoLoader);
+
+  loader.load("assets/chicken_hero.glb", (gltf) => {
+    chickenMesh = gltf.scene;
+    chickenMesh.updateMatrixWorld(true);
+
+    // Measure the true spin silhouette (max horizontal radius around the
+    // Y axis + height) instead of a bounding sphere, so the model renders
+    // as large as possible while never clipping at any spin/tilt angle.
+    const box = new THREE.Box3().setFromObject(chickenMesh);
+    const center = box.getCenter(new THREE.Vector3());
+    let rMax = 0;
+    const v = new THREE.Vector3();
+    chickenMesh.traverse(o => {
+      if (o.isMesh) {
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i += 3) {
+          v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld).sub(center);
+          const r = Math.hypot(v.x, v.z);
+          if (r > rMax) rMax = r;
+        }
+      }
+    });
+    const yHalf = Math.max(center.y - box.min.y, box.max.y - center.y);
+
+    // Perspective-exact fit: a silhouette of radius R stays inside the view
+    // cone (even when nearest to the camera) iff R <= distance * sin(fov/2).
+    const reach = camera.position.z * Math.sin(THREE.MathUtils.degToRad(camera.fov / 2));
+    const vExtent = yHalf * Math.cos(MAX_TILT) + rMax * Math.sin(MAX_TILT);
+    const scale = Math.min(reach / rMax, reach / vExtent) * 0.97;
+    chickenMesh.scale.setScalar(scale);
+    chickenMesh.position.copy(center).multiplyScalar(-scale);
+
+    // Initial tasty layout angle
+    chickenMesh.rotation.set(0.2, 0.5, 0.1);
+
+    scene.add(chickenMesh);
+  }, undefined, (e) => {
+    console.warn("Failed to load 3D chicken mesh. Falling back to static image.", e);
+    const fallback = document.getElementById("dishFallback");
+    if (fallback) fallback.style.display = "block";
+    canvas.style.display = "none";
+  });
+  
+  // Drag to rotate controls
+  canvas.addEventListener("mousedown", () => isDragging = true);
+  canvas.addEventListener("mousemove", (e) => {
+    const deltaMove = {
+      x: e.offsetX - previousMousePosition.x,
+      y: e.offsetY - previousMousePosition.y
+    };
+    
+    if (isDragging && chickenMesh) {
+      chickenMesh.rotation.y += deltaMove.x * 0.007;
+      chickenMesh.rotation.x = Math.max(-MAX_TILT, Math.min(MAX_TILT, chickenMesh.rotation.x + deltaMove.y * 0.007));
+    }
+
+    previousMousePosition = { x: e.offsetX, y: e.offsetY };
+  });
+  
+  addEventListener("mouseup", () => isDragging = false);
+  
+  // Touch support for dragging on mobile
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  });
+  canvas.addEventListener("touchmove", (e) => {
+    if (isDragging && e.touches.length === 1 && chickenMesh) {
+      const deltaMove = {
+        x: e.touches[0].clientX - previousMousePosition.x,
+        y: e.touches[0].clientY - previousMousePosition.y
+      };
+      chickenMesh.rotation.y += deltaMove.x * 0.007;
+      chickenMesh.rotation.x = Math.max(-MAX_TILT, Math.min(MAX_TILT, chickenMesh.rotation.x + deltaMove.y * 0.007));
+      previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  });
+  canvas.addEventListener("touchend", () => isDragging = false);
+  
+  // Auto resize canvas context on viewport change, relocating the canvas
+  // between the desktop sticky hero and the inline mobile slot as needed.
+  addEventListener("resize", () => {
+    const slot = document.getElementById("mobileDishSlot");
+    const desktopHome = document.querySelector(".hero-dish-bob");
+    const target = window.innerWidth <= 820 ? slot : desktopHome;
+    if (target && canvas.parentElement !== target) target.appendChild(canvas);
+
+    const w = target ? target.clientWidth : canvas.clientWidth;
+    const h = target ? (target.clientHeight || w) : canvas.clientHeight;
+    if (w > 0 && h > 0) {
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+  });
+}
+
+// Start fetching/decoding the 3D model immediately — the cinematic
+// loader overlay covers the download so the chicken is ready on reveal.
+init3D();
+
+// Cinematic Loader Trigger
+addEventListener("load", () => {
+  setTimeout(() => {
+    document.body.classList.add("loaded");
+    setTimeout(() => {
+      document.querySelectorAll("#hero .reveal").forEach(el => el.classList.add("visible"));
+    }, 300);
+  }, 1800);
+});
+</script>
+</body>
+</html>
